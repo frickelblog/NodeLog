@@ -73,6 +73,7 @@ wss.on('connection', function(ws)
 			if(json.ObjectName=="WS_AUTH")
 			{
 				var AuthMessage = eval('('+json.ObjectMessage+')');
+				ws['AUTH'] = AuthMessage.GUID;	
 				ClientListe[AuthMessage.GUID] = ws;
 				console.log('AUTH client:' + AuthMessage.GUID);
 				ws.send('{"ObjectMessage":" AUTH client:'+AuthMessage.GUID+'","ObjectName":"WS_MESSAGE","ObjectReciver":"'+json.ObjectReciver+'"}');
@@ -89,6 +90,15 @@ wss.on('connection', function(ws)
 			console.log('Unbehandelter Fehler: '+e.message);
 		}
     });
+	
+		
+	ws.on('close', function() 
+	{
+		// Client aus dem Array ClientListe Löschen
+		delete ClientListe[ws['AUTH']];
+	});
+
+	
     
 });
 
@@ -102,7 +112,7 @@ function SendClients(Nachricht)
 	// ClientString an alle angemeldeten Clients senden
 	for(k in ClientListe)
 	{
-		//console.log(ClientListe[k]+' / '+k+' / '+Nachricht);
+		console.log(ClientListe[k]+' / '+k+' / '+Nachricht);
 		ClientListe[k].send('{"ObjectMessage":"'+Nachricht+'","ObjectName":"WS_MESSAGE","ObjectReciver":"'+json.ObjectReciver+'"}');
 	}	
 }
