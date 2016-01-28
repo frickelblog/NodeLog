@@ -73,10 +73,9 @@ wss.on('connection', function(ws)
 			if(json.ObjectName=="WS_AUTH")
 			{
 				var AuthMessage = eval('('+json.ObjectMessage+')');
-				//
 				ClientListe[AuthMessage.GUID] = ws;
 				console.log('AUTH client:' + AuthMessage.GUID);
-				ws.send('{"ObjectMessage":" AUTH client:'+AuthMessage.GUID+'","ObjectName":"CI_MESSAGE","ObjectReciver":"'+json.ObjectReciver+'"}');
+				ws.send('{"ObjectMessage":" AUTH client:'+AuthMessage.GUID+'","ObjectName":"WS_MESSAGE","ObjectReciver":"'+json.ObjectReciver+'"}');
 			}
 					
 			// Wenn ein TS_MESSAGE object kommt, dann an den jenigen schicken zu dem es gehört	
