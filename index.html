@@ -30,7 +30,7 @@ $(document).ready(function() {
 					
 					if(json.ObjectName == "WS_MESSAGE")
 					{
-						message('<p class="message">'+json.ObjectMessage);
+						message('<p class="message">'+formatString(json.ObjectMessage));
 					}
 				}
 				
@@ -51,6 +51,28 @@ $(document).ready(function() {
 	function message(msg){
 		$('#chatLog').prepend(msg+'</p>');
 	}		
+	
+	function formatString(s)
+	{
+		var e = s.slice(27).substr(0,7);
+		var z='';
+		if(e.substr(0,5) == "000.0") {
+		  z = s.substr(0,27)+'<font color="lightgray">000.0</font>'+s.substr(32);
+		}
+		else if(e.substr(0,3) == "000") {
+		  z = s.substr(0,27)+'<font color="lightgray">000</font>'+s.substr(30);
+		}
+		else if(e.substr(0,2) == "00") {
+		  z = s.substr(0,27)+'<font color="lightgray">00</font>'+s.substr(29);
+		}
+		else if(e.substr(0,1) == "0") { 
+			z = s.substr(0,27)+'<font color="lightgray">0</font>'+s.substr(28);
+		}
+		else { 
+		  z=s;
+		}
+		return z;
+	}
 });	
 
 </script>
