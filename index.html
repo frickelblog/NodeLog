@@ -1,0 +1,109 @@
+﻿<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript">
+var socket; // socket wird hier GLOBAL definiert, damit ich es weiter unten, außerhalb der jQuery Funktion $() noch aufrufen kann.
+
+$(document).ready(function() {
+	
+	benchmarkcounter=0;
+	
+	if(!("WebSocket" in window)){
+		$('<p>Oh no, you need a browser that supports WebSockets. How about <a href="http://www.google.com/chrome">Google Chrome</a>?</p>').appendTo('#container');		
+	} else {
+		function connect(){
+			var host = "ws://%CONNECTION%/log";
+			
+			try{
+				socket = new WebSocket(host);
+				message('<p class="event">Socket Status: '+socket.readyState);
+				socket.onopen = function(){
+					message('<p class="event">Socket Status: '+socket.readyState+' (open)');
+					// AUTH 
+					var clientid = Math.round(Math.random() * (9999 - 1000 + 1) - 0.5) + 1000; // Client-ID zwischen 1000 und 9999
+					socket.send('{"ObjectMessage":"{\\"GUID\\":\\"'+clientid+'\\"}","ObjectName":"WS_AUTH","ObjectReciver":"server"}');
+				}
+				
+				socket.onmessage = function(msg) {			
+					// Message auseinaner nehmen
+					var json = eval('('+msg.data+')');
+					
+					if(json.ObjectName == "WS_MESSAGE")
+					{
+						message('<p class="message">'+json.ObjectMessage);
+					}
+				}
+				
+				socket.onclose = function(){
+					message('<p class="event">Socket Status: '+socket.readyState+' (Closed)');
+					connect();
+				}			
+					
+			} catch(exception){
+				message('<p>Error'+exception);
+			}
+					
+					
+		}
+		connect();
+	}
+
+	function message(msg){
+		$('#chatLog').prepend(msg+'</p>');
+	}		
+});	
+
+</script>
+<meta charset=utf-8 />
+<style type="text/css">
+body{font-family:Arial, Helvetica, sans-serif;}
+#container{
+	border:5px solid grey;
+	width:1000px;
+	margin:0 auto;
+	padding:10px;
+}
+#chatLog{
+	padding:5px;
+	border:1px solid black;	
+	height:800px;
+	overflow: auto;
+}
+#chatLog p{margin:0;}
+.event{color:#999;}
+.LISTClients{color:#F00;}
+.warning{
+	font-weight:bold;
+	color:#CCC;
+}
+#ClientList{
+	padding:5px;
+	border:1px solid black;	
+}
+
+</style>
+<title>NodeLog WebView</title>
+
+</head>
+<body>
+  <div id="wrapper">
+  
+  	<div id="container">
+    
+    	<h3>NodeLog WebView</h3>
+        
+		<table border=0 width="100%" valign="top">
+			<tr><td width="99%" valign="top">
+				Log-Historie:
+				<div id="chatLog">
+				
+				</div>
+			</td>
+			<td width="1%" valign="top">
+			</td></tr>
+		</table>
+	</div>
+  
+  </div>
+</body>
+</html>
