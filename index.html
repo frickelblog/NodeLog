@@ -1,6 +1,7 @@
 ﻿<html>
 <head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-1.4.2.min.js"> -->
 <script type="text/javascript">
 var socket; // socket wird hier GLOBAL definiert, damit ich es weiter unten, außerhalb der jQuery Funktion $() noch aufrufen kann.
 
@@ -12,7 +13,7 @@ $(document).ready(function() {
 		$('<p>Oh no, you need a browser that supports WebSockets. How about <a href="http://www.google.com/chrome">Google Chrome</a>?</p>').appendTo('#container');		
 	} else {
 		function connect(){
-			var host = "ws://%CONNECTION%/log";
+			var host = "ws://%CONNECTION%/";
 			
 			try{
 				socket = new WebSocket(host);
@@ -36,8 +37,13 @@ $(document).ready(function() {
 				
 				socket.onclose = function(){
 					message('<p class="event">Socket Status: '+socket.readyState+' (Closed)');
-					connect();
-				}			
+					//connect();
+				}
+				
+				socket.onerror = function(){
+					message('<p class="event">Socket Status: '+socket.readyState+' (error)');
+					//connect();
+				}
 					
 			} catch(exception){
 				message('<p>Error'+exception);

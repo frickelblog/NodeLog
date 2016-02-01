@@ -19,7 +19,7 @@ var sprintf 			= require('sprintf').sprintf;
 
 var CFG = {
 	SRV_NAME: os.hostname(),
-	SRV_PORT: 8000,
+	SRV_PORT: 8104,
 };
 
 /******************************************************************************************************************************************************************************************
@@ -56,7 +56,7 @@ function respondLog(req, res, next) {
 /******************************************************************************************************************************************************************************************
  *  Websocket-Server
  ******************************************************************************************************************************************************************************************/
-var wss = new WebSocketServer( { server: app, path: '/log' } );
+var wss = new WebSocketServer( { server: app, path: '/' } );
 console.log('Server is starting...');
 
 wss.on('connection', function(ws) 
@@ -66,8 +66,8 @@ wss.on('connection', function(ws)
 	{
 		try
 		{
-			// Die Objekte sind JSON Serialisiert - in JS muss man diese einfach nut Eval´n		
-			json=eval('('+message+')');
+			// Die Objekte sind JSON Serialisiert - in JS muss man diese einfach nur mit JSON Parsen		
+			json=JSON.parse(message);
 				
 			// Wenn ein TS_AUTH gesendet wird, muss der Client erstmal registriert werden	
 			if(json.ObjectName=="WS_AUTH")
@@ -96,6 +96,7 @@ wss.on('connection', function(ws)
 	{
 		// Client aus dem Array ClientListe Löschen
 		delete ClientListe[ws['AUTH']];
+		console.log('Disconnect Client:' + ws['AUTH']);
 	});
 
 	
